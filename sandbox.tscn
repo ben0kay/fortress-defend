@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://c0wl8fbddklrc" path="res://player.tscn" id="1_3h184"]
 [ext_resource type="PackedScene" uid="uid://crdun82qyr1rp" path="res://headquarters.tscn" id="2_cojph"]
+[ext_resource type="PackedScene" uid="uid://dl3mo5jnx5ytt" path="res://carbon_deposit.tscn" id="3_p7lbm"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_km8ha"]
 size = Vector3(40, 1, 40)
@@ -43,3 +44,6 @@ shape = SubResource("BoxShape3D_al25e")
 
 [node name="headquarters" parent="." unique_id=762396543 instance=ExtResource("2_cojph")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.907219, 0, -4.21607)
+
+[node name="CarbonDeposit" parent="." unique_id=722496689 instance=ExtResource("3_p7lbm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.528781, 0, -2.078022)

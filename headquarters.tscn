@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://crdun82qyr1rp"]
 
+[ext_resource type="Script" uid="uid://ljdr7s8q4akx" path="res://building.gd" id="1_7pg4v"]
+
 [sub_resource type="CylinderMesh" id="CylinderMesh_km8ha"]
 top_radius = 3.0
 bottom_radius = 3.0
@@ -8,6 +10,7 @@ bottom_radius = 3.0
 radius = 3.0
 
 [node name="headquarters" type="StaticBody3D" unique_id=762396543]
+script = ExtResource("1_7pg4v")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1090388742]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
