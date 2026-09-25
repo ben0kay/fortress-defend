@@ -8,6 +8,12 @@ size = Vector3(40, 1, 40)
 [sub_resource type="BoxShape3D" id="BoxShape3D_km8ha"]
 size = Vector3(40, 1, 40)
 
+[sub_resource type="BoxMesh" id="BoxMesh_dourk"]
+size = Vector3(3, 2, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_al25e"]
+size = Vector3(3, 2, 3)
+
 [node name="Sandbox" type="Node3D" unique_id=1392206333]
 
 [node name="Floor" type="StaticBody3D" parent="." unique_id=685744922]
@@ -24,3 +30,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07058263, 0, 0.031673074)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=154276709]
 transform = Transform3D(0.8660254, -0.35355338, 0.35355338, 0, 0.70710677, 0.70710677, -0.5, -0.6123724, 0.6123724, 0, 0, 0)
+
+[node name="Wall" type="StaticBody3D" parent="." unique_id=200535685]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -5)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Wall" unique_id=2133608509]
+mesh = SubResource("BoxMesh_dourk")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall" unique_id=1528491892]
+shape = SubResource("BoxShape3D_al25e")
