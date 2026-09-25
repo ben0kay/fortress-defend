@@ -1,6 +1,9 @@
 class_name Player
 extends CharacterBody3D
 
+enum Mode { NORMAL, BUILD_MENU, PLACING }
+var mode: Mode = Mode.NORMAL
+
 signal resource_changed(resource_key: String, new_amount: int)
 
 @export var move_speed: float = 5.0

@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://c0wl8fbddklrc" path="res://player.tscn" id="1_3h184"]
 [ext_resource type="PackedScene" uid="uid://crdun82qyr1rp" path="res://headquarters.tscn" id="2_cojph"]
 [ext_resource type="PackedScene" uid="uid://dl3mo5jnx5ytt" path="res://carbon_deposit.tscn" id="3_p7lbm"]
+[ext_resource type="Script" uid="uid://bjhvymt65om56" path="res://hud.gd" id="4_rvmsc"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_km8ha"]
 size = Vector3(40, 1, 40)
@@ -47,3 +48,33 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.907219, 0, -4.21607)
 
 [node name="CarbonDeposit" parent="." unique_id=722496689 instance=ExtResource("3_p7lbm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.528781, 0, -2.078022)
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1963867768]
+script = ExtResource("4_rvmsc")
+
+[node name="ResourceBar" type="PanelContainer" parent="HUD" unique_id=294939003]
+custom_minimum_size = Vector2(0, 48)
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+
+[node name="ResourceCounts" type="HBoxContainer" parent="HUD/ResourceBar" unique_id=14283562]
+layout_mode = 2
+
+[node name="CarbonLabel" type="Label" parent="HUD/ResourceBar/ResourceCounts" unique_id=1216816763]
+layout_mode = 2
+text = "Carbon: 0"
+
+[node name="BuildMenu" type="PanelContainer" parent="HUD" unique_id=1452905175]
+visible = false
+custom_minimum_size = Vector2(0, 160)
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Label" type="Label" parent="HUD/BuildMenu" unique_id=157803000]
+layout_mode = 2
+text = "BUILD MENU"

@@ -21,7 +21,7 @@ func _physics_process(delta: float) -> void:
 		gather_elapsed = 0.0
 		return
 
-	if not Input.is_action_pressed("gather"):
+	if not Input.is_action_pressed("secondary_fire"):
 		gather_elapsed = 0.0
 		return
 
