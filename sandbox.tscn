@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://dl3mo5jnx5ytt" path="res://carbon_deposit.tscn" id="3_p7lbm"]
 [ext_resource type="Script" uid="uid://cvqfbsopd7xu6" path="res://Scripts/UI/Hud.cs" id="4_rvmsc"]
 [ext_resource type="Script" uid="uid://nq3f71hjxps4" path="res://Scripts/World/BuildingPlacement.cs" id="5_rjrbw"]
+[ext_resource type="Resource" uid="uid://bb63xmdjntcf5" path="res://Data/BuildingCatalog.tres" id="5_ypj6x"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_km8ha"]
 size = Vector3(40, 1, 40)
@@ -52,7 +53,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.528781, 0, -2.078022)
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1963867768]
 script = ExtResource("4_rvmsc")
-HeadquartersScene = ExtResource("2_cojph")
+Catalog = ExtResource("5_ypj6x")
 
 [node name="ResourceBar" type="PanelContainer" parent="HUD" unique_id=294939003]
 custom_minimum_size = Vector2(0, 48)
@@ -84,17 +85,8 @@ layout_mode = 2
 visible = false
 layout_mode = 2
 
-[node name="HeadquartersButton" type="Button" parent="HUD/BuildMenu/MenuRows/BuildingChoices" unique_id=664102011]
-layout_mode = 2
-text = "Headquarters
-"
-
 [node name="Categories" type="HBoxContainer" parent="HUD/BuildMenu/MenuRows" unique_id=14552476]
 layout_mode = 2
-
-[node name="BaseButton" type="Button" parent="HUD/BuildMenu/MenuRows/Categories" unique_id=255497690]
-layout_mode = 2
-text = "Base"
 
 [node name="BuildingPlacement" type="Node3D" parent="." unique_id=1143372234]
 script = ExtResource("5_rjrbw")
