@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BuildingDefinition" format=3 uid="uid://ceau2t0tx610y"]
+
+[ext_resource type="Script" uid="uid://spf2pt0jcecf" path="res://Scripts/Buildings/BuildingCost.cs" id="1_e6poa"]
+[ext_resource type="PackedScene" uid="uid://crdun82qyr1rp" path="res://headquarters.tscn" id="2_hpnbn"]
+[ext_resource type="Script" uid="uid://cuy1e3uwamhw8" path="res://Scripts/Buildings/BuildingDefinition.cs" id="2_pbhbe"]
+
+[resource]
+script = ExtResource("2_pbhbe")
+Key = "headquarters"
+DisplayName = "Headquarters"
+Role = 0
+Scene = ExtResource("2_hpnbn")
+FootprintCells = Vector2i(3, 3)
+metadata/_custom_type_script = "uid://cuy1e3uwamhw8"

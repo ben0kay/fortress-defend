@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="BuildingCatalog" format=3 uid="uid://bb63xmdjntcf5"]
+
+[ext_resource type="Script" uid="uid://cuy1e3uwamhw8" path="res://Scripts/Buildings/BuildingDefinition.cs" id="1_v8a82"]
+[ext_resource type="Script" uid="uid://cd724l1h35qrp" path="res://Scripts/Buildings/BuildingCatalog.cs" id="2_jf80x"]
+[ext_resource type="Resource" uid="uid://ceau2t0tx610y" path="res://Data/Buildings/headquarters.tres" id="2_wq2rg"]
+
+[resource]
+script = ExtResource("2_jf80x")
+Buildings = Array[ExtResource("1_v8a82")]([ExtResource("2_wq2rg")])
+metadata/_custom_type_script = "uid://cd724l1h35qrp"
