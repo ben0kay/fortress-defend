@@ -138,7 +138,7 @@ public partial class Hud : CanvasLayer
 			return;
 		}
 
-		_buildingPlacement.BeginPlacement(definition.Scene);
+		_buildingPlacement.BeginPlacement(definition);
 		_player.CurrentMode = Player.Mode.Placing;
 		GD.Print("Placing: ", definition.DisplayName);
 	}

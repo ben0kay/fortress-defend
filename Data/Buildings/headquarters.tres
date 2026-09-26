@@ -11,4 +11,5 @@ DisplayName = "Headquarters"
 Role = 0
 Scene = ExtResource("2_hpnbn")
 FootprintCells = Vector2i(3, 3)
+MaximumHealth = 1000
 metadata/_custom_type_script = "uid://cuy1e3uwamhw8"

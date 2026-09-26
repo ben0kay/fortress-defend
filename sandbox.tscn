@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://crdun82qyr1rp" path="res://headquarters.tscn" id="2_cojph"]
 [ext_resource type="PackedScene" uid="uid://dl3mo5jnx5ytt" path="res://carbon_deposit.tscn" id="3_p7lbm"]
 [ext_resource type="Script" uid="uid://cvqfbsopd7xu6" path="res://Scripts/UI/Hud.cs" id="4_rvmsc"]
-[ext_resource type="Script" uid="uid://nq3f71hjxps4" path="res://Scripts/World/BuildingPlacement.cs" id="5_rjrbw"]
+[ext_resource type="Script" uid="uid://nq3f71hjxps4" path="res://Scripts/Buildings/BuildingPlacement.cs" id="5_rjrbw"]
 [ext_resource type="Resource" uid="uid://bb63xmdjntcf5" path="res://Data/BuildingCatalog.tres" id="5_ypj6x"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_km8ha"]
