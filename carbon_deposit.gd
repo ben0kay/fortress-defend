@@ -33,10 +33,10 @@ func gather_one(player: Player) -> void:
 func _on_body_entered(body: Node3D) -> void:
 	var player := body as Player
 	if player != null:
-		player.register_deposit(self)
+		player.gathering.register_deposit(self)
 
 
 func _on_body_exited(body: Node3D) -> void:
 	var player := body as Player
 	if player != null:
-		player.unregister_deposit(self)
+		player.gathering.unregister_deposit(self)

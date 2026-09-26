@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://c0wl8fbddklrc"]
 
 [ext_resource type="Script" uid="uid://dh67nsdybjsq" path="res://player.gd" id="1_4flbx"]
+[ext_resource type="Script" uid="uid://bgq4omegp5it6" path="res://player_gathering.gd" id="2_onrkg"]
+[ext_resource type="Script" uid="uid://dfqaoankokcmn" path="res://player_facing.gd" id="3_i3pqv"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4flbx"]
 size = Vector3(1, 1.6, 1)
@@ -8,17 +10,29 @@ size = Vector3(1, 1.6, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_sh265"]
 size = Vector3(1, 1.6, 1)
 
+[sub_resource type="BoxMesh" id="BoxMesh_km8ha"]
+size = Vector3(0.3, 0.3, 0.3)
+
 [node name="Player" type="CharacterBody3D" unique_id=481754007]
 script = ExtResource("1_4flbx")
-move_speed = null
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=498386403]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 shape = SubResource("BoxShape3D_4flbx")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=629894375]
+[node name="Camera3D" type="Camera3D" parent="." unique_id=459428773]
+transform = Transform3D(1, 0, 0, 0, 0.64278764, 0.76604444, 0, -0.76604444, 0.64278764, 0, 10, 11.5)
+
+[node name="Gathering" type="Node" parent="." unique_id=431475124]
+script = ExtResource("2_onrkg")
+
+[node name="Facing" type="Node" parent="." unique_id=585380250]
+script = ExtResource("3_i3pqv")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Facing" unique_id=629894375]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 mesh = SubResource("BoxMesh_sh265")
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=459428773]
-transform = Transform3D(1, 0, 0, 0, 0.64278764, 0.76604444, 0, -0.76604444, 0.64278764, 0, 10, 11.5)
+[node name="FrontMarker" type="MeshInstance3D" parent="Facing" unique_id=142790885]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -0.6)
+mesh = SubResource("BoxMesh_km8ha")
