@@ -75,6 +75,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="Label" type="Label" parent="HUD/BuildMenu" unique_id=157803000]
+[node name="MenuRows" type="VBoxContainer" parent="HUD/BuildMenu" unique_id=880153163]
 layout_mode = 2
-text = "BUILD MENU"
+
+[node name="BuildingChoices" type="HBoxContainer" parent="HUD/BuildMenu/MenuRows" unique_id=738888630]
+visible = false
+layout_mode = 2
+
+[node name="HeadquartersButton" type="Button" parent="HUD/BuildMenu/MenuRows/BuildingChoices" unique_id=664102011]
+layout_mode = 2
+text = "Headquarters
+"
+
+[node name="Categories" type="HBoxContainer" parent="HUD/BuildMenu/MenuRows" unique_id=14552476]
+layout_mode = 2
+
+[node name="BaseButton" type="Button" parent="HUD/BuildMenu/MenuRows/Categories" unique_id=255497690]
+layout_mode = 2
+text = "Base"

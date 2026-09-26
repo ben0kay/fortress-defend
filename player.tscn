@@ -26,7 +26,7 @@ transform = Transform3D(1, 0, 0, 0, 0.64278764, 0.76604444, 0, -0.76604444, 0.64
 [node name="Gathering" type="Node" parent="." unique_id=431475124]
 script = ExtResource("2_onrkg")
 
-[node name="Facing" type="Node" parent="." unique_id=585380250]
+[node name="Facing" type="Node3D" parent="." unique_id=1648000901]
 script = ExtResource("3_i3pqv")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Facing" unique_id=629894375]

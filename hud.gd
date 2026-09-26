@@ -3,17 +3,22 @@ extends CanvasLayer
 @onready var player: Player = $"../Player"
 @onready var carbon_label: Label = $ResourceBar/ResourceCounts/CarbonLabel
 @onready var build_menu: PanelContainer = $BuildMenu
+@onready var building_choices: HBoxContainer = $BuildMenu/MenuRows/BuildingChoices
+@onready var base_button: Button = $BuildMenu/MenuRows/Categories/BaseButton
 
 
 func _ready() -> void:
 	# GameMaker equivalent: Create event.
 	_update_carbon_label(player.resources["carbon"])
 	player.resource_changed.connect(_on_resource_changed)
+
+	base_button.pressed.connect(_on_base_button_pressed)
+
 	build_menu.hide()
+	building_choices.hide()
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Control switches between normal play and the build menu.
 	if event.is_action_pressed("toggle_build_menu") and not event.is_echo():
 		_toggle_build_menu()
 
@@ -24,7 +29,13 @@ func _toggle_build_menu() -> void:
 		build_menu.show()
 	else:
 		player.mode = Player.Mode.NORMAL
+		building_choices.hide()
 		build_menu.hide()
+
+
+func _on_base_button_pressed() -> void:
+	# Press Base again to collapse its building choices.
+	building_choices.visible = not building_choices.visible
 
 
 func _on_resource_changed(resource_key: String, new_amount: int) -> void:
