@@ -52,6 +52,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.528781, 0, -2.078022)
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1963867768]
 script = ExtResource("4_rvmsc")
+HeadquartersScene = ExtResource("2_cojph")
 
 [node name="ResourceBar" type="PanelContainer" parent="HUD" unique_id=294939003]
 custom_minimum_size = Vector2(0, 48)
