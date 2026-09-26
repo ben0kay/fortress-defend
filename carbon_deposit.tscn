@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dl3mo5jnx5ytt"]
 
-[ext_resource type="Script" uid="uid://c6gd8s6o5trei" path="res://carbon_deposit.gd" id="1_5glfw"]
+[ext_resource type="Script" uid="uid://0kcxj10mt1jx" path="res://Scripts/World/ResourceDeposit.cs" id="1_5glfw"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_km8ha"]
 top_radius = 1.0
