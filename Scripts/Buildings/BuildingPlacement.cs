@@ -6,15 +6,17 @@ public partial class BuildingPlacement : Node3D
 
 	private Camera3D _playerCamera;
 	private Node3D _preview;
+	private BuildingDefinition _selectedBuilding;
 
 	public override void _Ready()
 	{
-		// The camera stays with the player; the preview lives in the world.
+		// GameMaker equivalent: Create event.
 		_playerCamera = GetNode<Camera3D>("../Player/Camera3D");
 	}
 
 	public override void _Process(double delta)
 	{
+		// GameMaker equivalent: Step event. Only run while placing a building.
 		if (_preview == null)
 			return;
 
@@ -22,7 +24,7 @@ public partial class BuildingPlacement : Node3D
 		Vector3 rayOrigin = _playerCamera.ProjectRayOrigin(mousePosition);
 		Vector3 rayDirection = _playerCamera.ProjectRayNormal(mousePosition);
 
-		// Our current sandbox floor is at Y = 0.
+		// The sandbox floor surface is at Y = 0.
 		Plane floorPlane = new(Vector3.Up, 0.0f);
 		Vector3? hitPosition = floorPlane.IntersectsRay(rayOrigin, rayDirection);
 
@@ -41,46 +43,47 @@ public partial class BuildingPlacement : Node3D
 		_preview.Show();
 	}
 
-	public void BeginPlacement(PackedScene buildingScene)
+	public void BeginPlacement(BuildingDefinition definition)
+{
+	CancelPlacement();
+
+	if (definition == null || definition.Scene == null)
+		return;
+
+	// Create the preview once. The definition also holds its footprint and costs.
+	_preview = definition.Scene.Instantiate<Node3D>();
+	AddChild(_preview);
+
+	// The preview must not act as a solid building.
+	if (_preview is CollisionObject3D collisionObject)
 	{
-		CancelPlacement();
-
-		if (buildingScene == null)
-			return;
-
-		// Make one reusable preview instance. We do not create one every frame.
-		_preview = buildingScene.Instantiate<Node3D>();
-		AddChild(_preview);
-
-		// The preview must not act as a solid building.
-		if (_preview is CollisionObject3D collisionObject)
-		{
-			collisionObject.CollisionLayer = 0;
-			collisionObject.CollisionMask = 0;
-		}
-
-		CollisionShape3D collisionShape =
-			_preview.GetNodeOrNull<CollisionShape3D>("CollisionShape3D");
-
-		if (collisionShape != null)
-			collisionShape.Disabled = true;
-
-		MeshInstance3D mesh =
-			_preview.GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
-
-		if (mesh != null)
-		{
-			// Cyan and partly transparent so it reads as a preview.
-			mesh.MaterialOverride = new StandardMaterial3D
-			{
-				Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
-				AlbedoColor = new Color(0.2f, 0.9f, 1.0f, 0.45f)
-			};
-		}
+		collisionObject.CollisionLayer = 0;
+		collisionObject.CollisionMask = 0;
 	}
+
+	CollisionShape3D collisionShape =
+		_preview.GetNodeOrNull<CollisionShape3D>("CollisionShape3D");
+
+	if (collisionShape != null)
+		collisionShape.Disabled = true;
+
+	MeshInstance3D mesh =
+		_preview.GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
+
+	if (mesh != null)
+	{
+		mesh.MaterialOverride = new StandardMaterial3D
+		{
+			Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+			AlbedoColor = new Color(0.2f, 0.9f, 1.0f, 0.45f)
+		};
+	}
+}
 
 	public void CancelPlacement()
 	{
+		_selectedBuilding = null;
+
 		if (_preview == null)
 			return;
 
