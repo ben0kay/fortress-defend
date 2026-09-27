@@ -59,6 +59,10 @@ toggle_build_menu={
 ]
 }
 
+[layer_names]
+
+3d_physics/layer_2="Placement Blocker"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

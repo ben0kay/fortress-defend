@@ -22,7 +22,10 @@ public partial class Building : StaticBody3D
 
 	public override void _Ready()
 	{
-		// GameMaker equivalent: the generic building Create event.
+		// A ghost is never a real building and never reserves cells.
+		if (IsPreview)
+			return;
+
 		if (Definition == null)
 		{
 			GD.PushError($"{Name} has no BuildingDefinition assigned.");
@@ -32,11 +35,6 @@ public partial class Building : StaticBody3D
 		MaximumHealth = Definition.MaximumHealth;
 		CurrentHealth = MaximumHealth;
 
-		if (IsPreview)
-			return;
-
-		// Real buildings live directly under Sandbox. Preplaced buildings use
-		// this same initialization path as buildings placed during gameplay.
 		_worldGrid = GetNode<WorldGrid>("../WorldGrid");
 
 		GlobalPosition = _worldGrid.SnapFootprintCenter(
