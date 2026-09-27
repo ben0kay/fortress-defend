@@ -7,6 +7,7 @@ public partial class Hud : CanvasLayer
 	[Export] public BuildingCatalog Catalog { get; set; }
 
 	private Player _player;
+	private ResourceInventory _inventory;
 	private BuildingPlacement _buildingPlacement;
 	private Label _carbonLabel;
 	private PanelContainer _buildMenu;
@@ -18,17 +19,19 @@ public partial class Hud : CanvasLayer
 
 	public override void _Ready()
 	{
-		// GameMaker equivalent: Create event.
 		_player = GetNode<Player>("../Player");
+		_inventory = GetNode<ResourceInventory>("../ResourceInventory");
 		_buildingPlacement = GetNode<BuildingPlacement>("../BuildingPlacement");
 
 		_carbonLabel = GetNode<Label>("ResourceBar/ResourceCounts/CarbonLabel");
 		_buildMenu = GetNode<PanelContainer>("BuildMenu");
-		_buildingChoices = GetNode<HBoxContainer>("BuildMenu/MenuRows/BuildingChoices");
-		_categories = GetNode<HBoxContainer>("BuildMenu/MenuRows/Categories");
+		_buildingChoices =
+			GetNode<HBoxContainer>("BuildMenu/MenuRows/BuildingChoices");
+		_categories =
+			GetNode<HBoxContainer>("BuildMenu/MenuRows/Categories");
 
-		UpdateCarbonLabel(_player.Resources["carbon"]);
-		_player.ResourceChanged += OnResourceChanged;
+		UpdateCarbonLabel(_inventory.GetAmount("carbon"));
+		_inventory.ResourceChanged += OnResourceChanged;
 
 		CreateBuildingButtons();
 
@@ -46,11 +49,12 @@ public partial class Hud : CanvasLayer
 	{
 		if (Catalog == null)
 		{
-			GD.PushWarning("Assign BuildingCatalog.tres to the HUD's Catalog field.");
+			GD.PushWarning(
+                "Assign BuildingCatalog.tres to the HUD's Catalog field."
+			);
 			return;
 		}
 
-		// Sort once when the scene starts. No menu rebuilding every frame.
 		List<BuildingDefinition> buildings = new();
 
 		foreach (BuildingDefinition definition in Catalog.Buildings)
@@ -65,7 +69,11 @@ public partial class Hud : CanvasLayer
 
 			return order != 0
 				? order
-				: string.Compare(a.DisplayName, b.DisplayName, StringComparison.Ordinal);
+				: string.Compare(
+					a.DisplayName,
+					b.DisplayName,
+					StringComparison.Ordinal
+				);
 		});
 
 		foreach (BuildingDefinition definition in buildings)
@@ -92,7 +100,9 @@ public partial class Hud : CanvasLayer
 		button.Pressed += () => ToggleCategory(category);
 	}
 
-	private void CreateBuildingButton(BuildingDefinition definition, string category)
+	private void CreateBuildingButton(
+		BuildingDefinition definition,
+		string category)
 	{
 		Button button = new()
 		{
@@ -134,7 +144,9 @@ public partial class Hud : CanvasLayer
 	{
 		if (definition.Scene == null)
 		{
-			GD.PushWarning($"Building '{definition.Key}' has no Scene assigned.");
+			GD.PushWarning(
+				$"Building '{definition.Key}' has no Scene assigned."
+			);
 			return;
 		}
 

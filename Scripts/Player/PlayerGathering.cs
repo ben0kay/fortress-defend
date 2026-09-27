@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public partial class PlayerGathering : Node
 {
 	private Player _player;
+	private ResourceInventory _inventory;
 	private readonly List<ResourceDeposit> _nearbyDeposits = new();
 
 	private ResourceDeposit _currentDeposit;
@@ -12,11 +13,13 @@ public partial class PlayerGathering : Node
 	public override void _Ready()
 	{
 		_player = GetParent<Player>();
+		_inventory = GetNode<ResourceInventory>(
+            "../../ResourceInventory"
+		);
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
-		// GameMaker equivalent: a separate Step event for gathering.
 		if (_player.CurrentMode != Player.Mode.Normal ||
 			!Input.IsActionPressed("secondary_fire"))
 		{
@@ -44,7 +47,7 @@ public partial class PlayerGathering : Node
 			   _currentDeposit.CanGather())
 		{
 			_gatherElapsed -= _currentDeposit.GatherIntervalSeconds;
-			_currentDeposit.GatherOne(_player);
+			_currentDeposit.GatherOne(_inventory);
 		}
 	}
 
@@ -67,7 +70,6 @@ public partial class PlayerGathering : Node
 		ResourceDeposit nearest = null;
 		float nearestDistance = float.PositiveInfinity;
 
-		// Check only deposits whose gathering areas contain the player.
 		foreach (ResourceDeposit deposit in _nearbyDeposits)
 		{
 			if (!deposit.CanGather())

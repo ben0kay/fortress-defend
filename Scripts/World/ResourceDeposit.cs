@@ -16,7 +16,6 @@ public partial class ResourceDeposit : Node3D
 		_gatherArea = GetNode<Area3D>("GatherArea");
 		_visual = GetNode<Node3D>("Visual");
 
-		// Tell players when this deposit enters or leaves gathering range.
 		_gatherArea.BodyEntered += OnBodyEntered;
 		_gatherArea.BodyExited += OnBodyExited;
 	}
@@ -26,14 +25,12 @@ public partial class ResourceDeposit : Node3D
 		return ResourceRemaining > 0;
 	}
 
-	public void GatherOne(Player player)
+	public void GatherOne(ResourceInventory inventory)
 	{
-		// The deposit controls its contents; the player controls when to ask.
-		if (!CanGather())
+		if (!CanGather() || !inventory.Add(ResourceKey, 1))
 			return;
 
-		ResourceRemaining -= 1;
-		player.AddResource(ResourceKey, 1);
+		ResourceRemaining--;
 
 		if (ResourceRemaining == 0)
 			_visual.Hide();

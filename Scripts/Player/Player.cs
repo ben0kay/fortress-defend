@@ -1,5 +1,4 @@
 using Godot;
-using System.Collections.Generic;
 
 public partial class Player : CharacterBody3D
 {
@@ -10,20 +9,12 @@ public partial class Player : CharacterBody3D
 		Placing
 	}
 
-	[Signal]
-	public delegate void ResourceChangedEventHandler(string resourceKey, int newAmount);
-
 	[Export] public float MoveSpeed { get; set; } = 5.0f;
 
 	public PlayerGathering Gathering { get; private set; }
 	public Mode CurrentMode { get; set; } = Mode.Normal;
 
 	private AnimationPlayer _walkAnimation;
-
-	public Dictionary<string, int> Resources { get; } = new()
-	{
-		["carbon"] = 0
-	};
 
 	public override void _Ready()
 	{
@@ -83,19 +74,5 @@ public partial class Player : CharacterBody3D
 			movement += GetGravity() * (float)delta;
 
 		Velocity = movement;
-	}
-
-	public void AddResource(string resourceKey, int amount)
-	{
-		if (amount <= 0)
-			return;
-
-		Resources.TryGetValue(resourceKey, out int currentAmount);
-		int newAmount = currentAmount + amount;
-
-		Resources[resourceKey] = newAmount;
-		EmitSignal(SignalName.ResourceChanged, resourceKey, newAmount);
-
-		GD.Print(resourceKey, ": ", newAmount);
 	}
 }
