@@ -4,6 +4,12 @@
 [ext_resource type="PackedScene" uid="uid://crdun82qyr1rp" path="res://headquarters.tscn" id="2_hpnbn"]
 [ext_resource type="Script" uid="uid://cuy1e3uwamhw8" path="res://Scripts/Buildings/BuildingDefinition.cs" id="2_pbhbe"]
 
+[sub_resource type="Resource" id="Resource_44b12"]
+script = ExtResource("1_e6poa")
+ResourceKey = "cabon"
+Amount = 5
+metadata/_custom_type_script = "uid://spf2pt0jcecf"
+
 [resource]
 script = ExtResource("2_pbhbe")
 Key = "headquarters"
@@ -13,4 +19,5 @@ Scene = ExtResource("2_hpnbn")
 FootprintCells = Vector2i(3, 3)
 MaximumHealth = 1000
 MaximumInstances = 1
+Costs = Array[ExtResource("1_e6poa")]([SubResource("Resource_44b12")])
 metadata/_custom_type_script = "uid://cuy1e3uwamhw8"
