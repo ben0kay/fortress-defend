@@ -14,6 +14,8 @@ public partial class Player : CharacterBody3D
 	public delegate void ResourceChangedEventHandler(string resourceKey, int newAmount);
 
 	[Export] public float MoveSpeed { get; set; } = 5.0f;
+	[Export] public AnimationPlayer WalkAnimation { get; set; }
+
 
 	public PlayerGathering Gathering { get; private set; }
 	public Mode CurrentMode { get; set; } = Mode.Normal;
@@ -24,18 +26,37 @@ public partial class Player : CharacterBody3D
 		["carbon"] = 0
 	};
 
+
+
 	public override void _Ready()
 	{
-		// GameMaker equivalent: Create event.
 		Gathering = GetNode<PlayerGathering>("Gathering");
+
+
+
+		WalkAnimation.Play("Walk");
+		WalkAnimation.Pause();
+		WalkAnimation.Seek(0.0, true);
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
-		// GameMaker equivalent: Step event for movement and collisions.
 		ApplyMovement();
 		ApplyGravity(delta);
 		MoveAndSlide();
+
+		bool isMoving = new Vector2(Velocity.X, Velocity.Z).LengthSquared() > 0.01f;
+
+		if (isMoving)
+		{
+			if (!WalkAnimation.IsPlaying())
+				WalkAnimation.Play("Walk");
+		}
+		else if (WalkAnimation.IsPlaying())
+		{
+			WalkAnimation.Pause();
+			WalkAnimation.Seek(0.0, true);
+		}
 	}
 
 	private void ApplyMovement()
