@@ -6,6 +6,7 @@ public partial class BuildingPlacement : Node3D
 
 	private Camera3D _playerCamera;
 	private WorldGrid _worldGrid;
+	private ResourceInventory _inventory;
 	private PlacementValidator _validator;
 	private BuildingDefinition _selectedBuilding;
 	private Node3D _preview;
@@ -14,15 +15,14 @@ public partial class BuildingPlacement : Node3D
 
 	public override void _Ready()
 	{
-		// GameMaker equivalent: Create event.
 		_playerCamera = GetNode<Camera3D>("../Player/Camera3D");
 		_worldGrid = GetNode<WorldGrid>("../WorldGrid");
-		_validator = new PlacementValidator(_worldGrid);
+		_inventory = GetNode<ResourceInventory>("../ResourceInventory");
+		_validator = new PlacementValidator(_worldGrid, _inventory);
 	}
 
 	public override void _Process(double delta)
 	{
-		// GameMaker equivalent: Step event. No work outside placement mode.
 		if (_preview == null)
 			return;
 
@@ -47,16 +47,13 @@ public partial class BuildingPlacement : Node3D
 
 		_preview.GlobalPosition = position;
 
-		// Keep the visible lines aligned with world cells.
 		Vector2I nearestCell = _worldGrid.WorldToCell(hitPosition.Value);
 		_gridVisual.GlobalPosition = _worldGrid.CellToWorld(nearestCell);
-
-	
 
 		_preview.Show();
 		_gridVisual.Show();
 	}
-	
+
 	public override void _PhysicsProcess(double delta)
 	{
 		if (_preview == null || !_preview.Visible)
@@ -84,14 +81,31 @@ public partial class BuildingPlacement : Node3D
 
 	private void PlaceBuilding(Vector3 worldPosition)
 	{
-		Building building = _selectedBuilding.Scene.Instantiate<Building>();
+		// Check again at the moment of purchase.
+		if (!_validator.CanPlace(
+			GetWorld3D().DirectSpaceState,
+			worldPosition,
+			_selectedBuilding))
+			return;
 
-		// Set these before AddChild: AddChild triggers Building._Ready(),
-		// where the real building registers its footprint with WorldGrid.
+		if (!_inventory.TryPay(_selectedBuilding))
+			return;
+
+		Building building = _selectedBuilding.Scene.Instantiate<Building>();
 		building.Definition = _selectedBuilding;
 		building.Position = GetParent<Node3D>().ToLocal(worldPosition);
 
 		GetParent().AddChild(building);
+
+		if (!building.HasReservedCells)
+		{
+			building.QueueFree();
+			_inventory.Refund(_selectedBuilding);
+			GD.PushError(
+				$"Could not place {_selectedBuilding.DisplayName}; cost refunded."
+			);
+			return;
+		}
 
 		GD.Print("Built: ", _selectedBuilding.DisplayName);
 	}
@@ -99,7 +113,6 @@ public partial class BuildingPlacement : Node3D
 	public void BeginPlacement(BuildingDefinition definition)
 	{
 		CancelPlacement();
-	
 
 		if (definition == null || definition.Scene == null)
 			return;
@@ -110,45 +123,43 @@ public partial class BuildingPlacement : Node3D
 	}
 
 	private void CreatePreview()
-{
-	Building preview = _selectedBuilding.Scene.Instantiate<Building>();
-
-	// Must happen BEFORE AddChild, which triggers Building._Ready().
-	preview.IsPreview = true;
-
-	_preview = preview;
-	AddChild(_preview);
-
-	// The preview must not collide with anything.
-	preview.CollisionLayer = 0;
-	preview.CollisionMask = 0;
-
-	CollisionShape3D collisionShape =
-		preview.GetNodeOrNull<CollisionShape3D>("CollisionShape3D");
-
-	if (collisionShape != null)
-		collisionShape.Disabled = true;
-
-	MeshInstance3D mesh =
-		preview.GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
-
-	if (mesh != null)
 	{
-		mesh.MaterialOverride = new StandardMaterial3D
+		Building preview = _selectedBuilding.Scene.Instantiate<Building>();
+		preview.IsPreview = true;
+
+		_preview = preview;
+		AddChild(_preview);
+
+		preview.CollisionLayer = 0;
+		preview.CollisionMask = 0;
+
+		CollisionShape3D collisionShape =
+			preview.GetNodeOrNull<CollisionShape3D>("CollisionShape3D");
+
+		if (collisionShape != null)
+			collisionShape.Disabled = true;
+
+		MeshInstance3D mesh =
+			preview.GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
+
+		if (mesh != null)
 		{
-			Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
-			AlbedoColor = new Color(0.2f, 0.9f, 1.0f, 0.45f)
-		};
+			mesh.MaterialOverride = new StandardMaterial3D
+			{
+				Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+				AlbedoColor = new Color(0.2f, 0.9f, 1.0f, 0.45f)
+			};
+		}
 	}
-}
 
 	private void CreateGridVisual()
 	{
-		// Create the lines once. Each frame we only move this mesh.
 		int cells = Mathf.Max(
 			GridCellsAcross,
-			Mathf.Max(_selectedBuilding.FootprintCells.X,
-					  _selectedBuilding.FootprintCells.Y) + 4
+			Mathf.Max(
+				_selectedBuilding.FootprintCells.X,
+				_selectedBuilding.FootprintCells.Y
+			) + 4
 		);
 
 		if (cells % 2 == 0)
@@ -164,11 +175,19 @@ public partial class BuildingPlacement : Node3D
 		{
 			float coordinate = -halfWidth + line * cellSize;
 
-			lines.SurfaceAddVertex(new Vector3(coordinate, 0.04f, -halfWidth));
-			lines.SurfaceAddVertex(new Vector3(coordinate, 0.04f, halfWidth));
+			lines.SurfaceAddVertex(
+				new Vector3(coordinate, 0.04f, -halfWidth)
+			);
+			lines.SurfaceAddVertex(
+				new Vector3(coordinate, 0.04f, halfWidth)
+			);
 
-			lines.SurfaceAddVertex(new Vector3(-halfWidth, 0.04f, coordinate));
-			lines.SurfaceAddVertex(new Vector3(halfWidth, 0.04f, coordinate));
+			lines.SurfaceAddVertex(
+				new Vector3(-halfWidth, 0.04f, coordinate)
+			);
+			lines.SurfaceAddVertex(
+				new Vector3(halfWidth, 0.04f, coordinate)
+			);
 		}
 
 		lines.SurfaceEnd();
@@ -218,7 +237,8 @@ public partial class BuildingPlacement : Node3D
 		MeshInstance3D previewMesh =
 			_preview.GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
 
-		if (previewMesh?.MaterialOverride is StandardMaterial3D previewMaterial)
+		if (previewMesh?.MaterialOverride is
+			StandardMaterial3D previewMaterial)
 			previewMaterial.AlbedoColor = previewColor;
 
 		if (_gridVisual.MaterialOverride is StandardMaterial3D gridMaterial)
@@ -227,7 +247,6 @@ public partial class BuildingPlacement : Node3D
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
-		// UI buttons handle their own clicks before they reach this method.
 		if (_preview == null)
 			return;
 

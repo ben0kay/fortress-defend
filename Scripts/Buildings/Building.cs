@@ -4,15 +4,18 @@ using System;
 public partial class Building : StaticBody3D
 {
 	[Signal]
-	public delegate void HealthChangedEventHandler(int currentHealth, int maximumHealth);
+	public delegate void HealthChangedEventHandler(
+		int currentHealth,
+		int maximumHealth
+	);
 
 	[Signal]
 	public delegate void DestroyedEventHandler(Building building);
 
 	[Export] public BuildingDefinition Definition { get; set; }
 
-	// Placement sets this BEFORE adding the preview to the scene tree.
 	public bool IsPreview { get; set; }
+	public bool HasReservedCells => _hasReservedCells;
 
 	public int MaximumHealth { get; private set; }
 	public int CurrentHealth { get; private set; }
@@ -22,7 +25,6 @@ public partial class Building : StaticBody3D
 
 	public override void _Ready()
 	{
-		// A ghost is never a real building and never reserves cells.
 		if (IsPreview)
 			return;
 
@@ -54,7 +56,6 @@ public partial class Building : StaticBody3D
 
 	public override void _ExitTree()
 	{
-		// GameMaker equivalent: Clean Up event.
 		if (_hasReservedCells)
 			_worldGrid.Release(this);
 	}
