@@ -63,10 +63,10 @@ public partial class BuildingPlacement : Node3D
 			return;
 
 		bool canPlace = _validator.CanPlace(
-			GetWorld3D().DirectSpaceState,
-			_preview.GlobalPosition,
-			_selectedBuilding.FootprintCells
-		);
+		GetWorld3D().DirectSpaceState,
+		_preview.GlobalPosition,
+		_selectedBuilding
+	);
 
 		UpdatePlacementFeedback(canPlace);
 	}

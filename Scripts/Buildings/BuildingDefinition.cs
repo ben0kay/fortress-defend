@@ -18,6 +18,7 @@ public partial class BuildingDefinition : Resource
 	[ExportGroup("Vitals and Construction")]
 	[Export] public int MaximumHealth { get; set; } = 100;
 	[Export] public float BuildTimeSeconds { get; set; } = 0.0f;
+	[Export] public int MaximumInstances { get; set; } = 9999;
 
 	[ExportGroup("Economy")]
 	[Export] public Array<BuildingCost> Costs { get; set; } = new();
