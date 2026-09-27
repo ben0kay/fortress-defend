@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://c2xvrdoof8fr2" path="res://Scripts/Player/Player.cs" id="1_i3pqv"]
 [ext_resource type="Script" uid="uid://bxpnm1vrsd7nb" path="res://Scripts/Player/PlayerGathering.cs" id="2_hqtel"]
 [ext_resource type="Script" uid="uid://404pif7t6lno" path="res://Scripts/Player/PlayerFacing.cs" id="3_sweqy"]
-[ext_resource type="PackedScene" uid="uid://bw13op4idqltx" path="res://Assets/Models/Player/PLAYER.glb" id="4_hqtel"]
+[ext_resource type="PackedScene" uid="uid://i0k2ffcdi6xa" path="res://Assets/Models/Player/PLAYER_NEW.glb" id="4_hqtel"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4flbx"]
 size = Vector3(1, 1.6, 1)
@@ -40,5 +40,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -0.6)
 visible = false
 mesh = SubResource("BoxMesh_km8ha")
 
-[node name="Player_Mesh" parent="Facing" unique_id=2108994939 instance=ExtResource("4_hqtel")]
+[node name="PLAYER_NEW" parent="Facing" unique_id=1865884541 instance=ExtResource("4_hqtel")]
 transform = Transform3D(-0.4, 0, -3.4969112e-08, 0, 0.4, 0, 3.4969112e-08, 0, -0.4, 0, 0, 0)
