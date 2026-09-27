@@ -1,10 +1,14 @@
 using Godot;
+using System.Collections.Generic;
 
 public partial class WorldGrid : Node3D
 {
 	[Export] public float CellSize { get; set; } = 2.0f;
 
-	// Grid cells are centered at Origin, then every CellSize units in X and Z.
+	// A missing cell is free. An occupied cell records the object that owns it.
+	private readonly Dictionary<Vector2I, Node3D> _cellOwners = new();
+	private readonly Dictionary<Node3D, List<Vector2I>> _ownerCells = new();
+
 	public Vector2I WorldToCell(Vector3 worldPosition)
 	{
 		Vector3 offset = worldPosition - GlobalPosition;
@@ -26,10 +30,9 @@ public partial class WorldGrid : Node3D
 
 	public Vector3 SnapFootprintCenter(Vector3 worldPosition, Vector2I footprint)
 	{
-		// Odd widths center on a cell; even widths center between cells.
+		// Odd dimensions center on a cell; even dimensions center between cells.
 		float xOffset = footprint.X % 2 == 0 ? CellSize * 0.5f : 0.0f;
 		float zOffset = footprint.Y % 2 == 0 ? CellSize * 0.5f : 0.0f;
-
 		Vector3 origin = GlobalPosition;
 
 		float x = Mathf.Round((worldPosition.X - origin.X - xOffset) / CellSize)
@@ -39,5 +42,79 @@ public partial class WorldGrid : Node3D
 			* CellSize + origin.Z + zOffset;
 
 		return new Vector3(x, origin.Y, z);
+	}
+
+	public List<Vector2I> GetFootprintCells(Vector3 snappedCenter, Vector2I footprint)
+	{
+		List<Vector2I> cells = new();
+
+		if (footprint.X <= 0 || footprint.Y <= 0)
+			return cells;
+
+		// Find the lower-left cell of the building's footprint.
+		float centerX = (snappedCenter.X - GlobalPosition.X) / CellSize;
+		float centerZ = (snappedCenter.Z - GlobalPosition.Z) / CellSize;
+
+		int firstX = Mathf.RoundToInt(centerX - (footprint.X - 1) * 0.5f);
+		int firstZ = Mathf.RoundToInt(centerZ - (footprint.Y - 1) * 0.5f);
+
+		for (int x = 0; x < footprint.X; x++)
+		{
+			for (int z = 0; z < footprint.Y; z++)
+				cells.Add(new Vector2I(firstX + x, firstZ + z));
+		}
+
+		return cells;
+	}
+
+	public bool CanOccupy(Vector3 snappedCenter, Vector2I footprint)
+	{
+		List<Vector2I> cells = GetFootprintCells(snappedCenter, footprint);
+
+		if (cells.Count == 0)
+			return false;
+
+		foreach (Vector2I cell in cells)
+		{
+			if (_cellOwners.ContainsKey(cell))
+				return false;
+		}
+
+		return true;
+	}
+
+	public bool TryOccupy(Node3D owner, Vector3 snappedCenter, Vector2I footprint)
+	{
+		if (owner == null || _ownerCells.ContainsKey(owner))
+			return false;
+
+		List<Vector2I> cells = GetFootprintCells(snappedCenter, footprint);
+
+		if (cells.Count == 0)
+			return false;
+
+		// Check the entire footprint before changing anything.
+		foreach (Vector2I cell in cells)
+		{
+			if (_cellOwners.ContainsKey(cell))
+				return false;
+		}
+
+		foreach (Vector2I cell in cells)
+			_cellOwners[cell] = owner;
+
+		_ownerCells[owner] = cells;
+		return true;
+	}
+
+	public void Release(Node3D owner)
+	{
+		if (!_ownerCells.TryGetValue(owner, out List<Vector2I> cells))
+			return;
+
+		foreach (Vector2I cell in cells)
+			_cellOwners.Remove(cell);
+
+		_ownerCells.Remove(owner);
 	}
 }
