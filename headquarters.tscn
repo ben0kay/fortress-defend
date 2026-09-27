@@ -10,6 +10,7 @@ bottom_radius = 3.0
 radius = 3.0
 
 [node name="headquarters" type="StaticBody3D" unique_id=762396543]
+collision_layer = 3
 script = ExtResource("1_7pg4v")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1090388742]

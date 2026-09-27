@@ -6,17 +6,17 @@ public partial class BuildingPlacement : Node3D
 
 	private Camera3D _playerCamera;
 	private WorldGrid _worldGrid;
+	private PlacementValidator _validator;
 	private BuildingDefinition _selectedBuilding;
 	private Node3D _preview;
 	private MeshInstance3D _gridVisual;
-
-	private Vector3? _lastCheckedPosition;
 
 	public override void _Ready()
 	{
 		// GameMaker equivalent: Create event.
 		_playerCamera = GetNode<Camera3D>("../Player/Camera3D");
 		_worldGrid = GetNode<WorldGrid>("../WorldGrid");
+		_validator = new PlacementValidator(_worldGrid);
 	}
 
 	public override void _Process(double delta)
@@ -50,26 +50,31 @@ public partial class BuildingPlacement : Node3D
 		Vector2I nearestCell = _worldGrid.WorldToCell(hitPosition.Value);
 		_gridVisual.GlobalPosition = _worldGrid.CellToWorld(nearestCell);
 
-		// Occupancy is static for now, so check only when the snapped position changes.
-		if (_lastCheckedPosition == null || _lastCheckedPosition.Value != position)
-		{
-			bool canPlace = _worldGrid.CanOccupy(
-				position,
-				_selectedBuilding.FootprintCells
-			);
-
-			UpdatePlacementFeedback(canPlace);
-			_lastCheckedPosition = position;
-		}
+	
 
 		_preview.Show();
 		_gridVisual.Show();
+	}
+	
+	public override void _PhysicsProcess(double delta)
+	{
+		// GameMaker equivalent: a Step event synchronized with physics.
+		if (_preview == null || !_preview.Visible)
+			return;
+
+		bool canPlace = _validator.CanPlace(
+			GetWorld3D().DirectSpaceState,
+			_preview.GlobalPosition,
+			_selectedBuilding.FootprintCells
+		);
+
+		UpdatePlacementFeedback(canPlace);
 	}
 
 	public void BeginPlacement(BuildingDefinition definition)
 	{
 		CancelPlacement();
-		_lastCheckedPosition = null;
+	
 
 		if (definition == null || definition.Scene == null)
 			return;

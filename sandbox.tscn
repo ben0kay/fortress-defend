@@ -51,6 +51,7 @@ shape = SubResource("BoxShape3D_al25e")
 
 [node name="headquarters" parent="." unique_id=762396543 instance=ExtResource("2_cojph")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.907219, 0, -4.21607)
+collision_layer = 3
 Definition = ExtResource("3_0fpt2")
 
 [node name="CarbonDeposit" parent="." unique_id=722496689 instance=ExtResource("3_p7lbm")]
