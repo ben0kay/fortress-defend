@@ -92,3 +92,5 @@ script = ExtResource("5_rjrbw")
 
 [node name="WorldGrid" type="Node3D" parent="." unique_id=674227576]
 script = ExtResource("7_44b12")
+
+[node name="ResourceInventory" type="Node" parent="." unique_id=1448365247]

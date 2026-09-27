@@ -14,29 +14,23 @@ public partial class Player : CharacterBody3D
 	public delegate void ResourceChangedEventHandler(string resourceKey, int newAmount);
 
 	[Export] public float MoveSpeed { get; set; } = 5.0f;
-	private AnimationPlayer _walkAnimation;
-
-2.
-
 
 	public PlayerGathering Gathering { get; private set; }
 	public Mode CurrentMode { get; set; } = Mode.Normal;
 
-	// Add more resource keys here as the game grows.
+	private AnimationPlayer _walkAnimation;
+
 	public Dictionary<string, int> Resources { get; } = new()
 	{
 		["carbon"] = 0
 	};
 
-
-
 	public override void _Ready()
 	{
 		Gathering = GetNode<PlayerGathering>("Gathering");
-
 		_walkAnimation = GetNode<AnimationPlayer>(
-    	"Facing/PLAYER_NEW/AnimationPlayer"
-	);
+            "Facing/PLAYER_NEW/AnimationPlayer"
+		);
 
 		_walkAnimation.Play("Walk");
 		_walkAnimation.Pause();
@@ -49,7 +43,8 @@ public partial class Player : CharacterBody3D
 		ApplyGravity(delta);
 		MoveAndSlide();
 
-		bool isMoving = new Vector2(Velocity.X, Velocity.Z).LengthSquared() > 0.01f;
+		bool isMoving =
+			new Vector2(Velocity.X, Velocity.Z).LengthSquared() > 0.01f;
 
 		if (isMoving)
 		{
@@ -101,7 +96,6 @@ public partial class Player : CharacterBody3D
 		Resources[resourceKey] = newAmount;
 		EmitSignal(SignalName.ResourceChanged, resourceKey, newAmount);
 
-		// Temporary feedback alongside the HUD.
 		GD.Print(resourceKey, ": ", newAmount);
 	}
 }
