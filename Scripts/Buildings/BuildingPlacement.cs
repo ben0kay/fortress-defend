@@ -80,35 +80,37 @@ public partial class BuildingPlacement : Node3D
 	}
 
 	private void CreatePreview()
+{
+	Building preview = _selectedBuilding.Scene.Instantiate<Building>();
+
+	// Must happen BEFORE AddChild, which triggers Building._Ready().
+	preview.IsPreview = true;
+
+	_preview = preview;
+	AddChild(_preview);
+
+	// The preview must not collide with anything.
+	preview.CollisionLayer = 0;
+	preview.CollisionMask = 0;
+
+	CollisionShape3D collisionShape =
+		preview.GetNodeOrNull<CollisionShape3D>("CollisionShape3D");
+
+	if (collisionShape != null)
+		collisionShape.Disabled = true;
+
+	MeshInstance3D mesh =
+		preview.GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
+
+	if (mesh != null)
 	{
-		_preview = _selectedBuilding.Scene.Instantiate<Node3D>();
-		AddChild(_preview);
-
-		// A preview is visual only; it cannot block the player.
-		if (_preview is CollisionObject3D collisionObject)
+		mesh.MaterialOverride = new StandardMaterial3D
 		{
-			collisionObject.CollisionLayer = 0;
-			collisionObject.CollisionMask = 0;
-		}
-
-		CollisionShape3D collisionShape =
-			_preview.GetNodeOrNull<CollisionShape3D>("CollisionShape3D");
-
-		if (collisionShape != null)
-			collisionShape.Disabled = true;
-
-		MeshInstance3D mesh =
-			_preview.GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
-
-		if (mesh != null)
-		{
-			mesh.MaterialOverride = new StandardMaterial3D
-			{
-				Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
-				AlbedoColor = new Color(0.2f, 0.9f, 1.0f, 0.45f)
-			};
-		}
+			Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
+			AlbedoColor = new Color(0.2f, 0.9f, 1.0f, 0.45f)
+		};
 	}
+}
 
 	private void CreateGridVisual()
 	{
