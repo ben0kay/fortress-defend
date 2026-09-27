@@ -14,7 +14,9 @@ public partial class Player : CharacterBody3D
 	public delegate void ResourceChangedEventHandler(string resourceKey, int newAmount);
 
 	[Export] public float MoveSpeed { get; set; } = 5.0f;
-	[Export] public AnimationPlayer WalkAnimation { get; set; }
+	private AnimationPlayer _walkAnimation;
+
+2.
 
 
 	public PlayerGathering Gathering { get; private set; }
@@ -32,11 +34,13 @@ public partial class Player : CharacterBody3D
 	{
 		Gathering = GetNode<PlayerGathering>("Gathering");
 
+		_walkAnimation = GetNode<AnimationPlayer>(
+    	"Facing/PLAYER_NEW/AnimationPlayer"
+	);
 
-
-		WalkAnimation.Play("Walk");
-		WalkAnimation.Pause();
-		WalkAnimation.Seek(0.0, true);
+		_walkAnimation.Play("Walk");
+		_walkAnimation.Pause();
+		_walkAnimation.Seek(0.0, true);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -49,13 +53,13 @@ public partial class Player : CharacterBody3D
 
 		if (isMoving)
 		{
-			if (!WalkAnimation.IsPlaying())
-				WalkAnimation.Play("Walk");
+			if (!_walkAnimation.IsPlaying())
+				_walkAnimation.Play("Walk");
 		}
-		else if (WalkAnimation.IsPlaying())
+		else if (_walkAnimation.IsPlaying())
 		{
-			WalkAnimation.Pause();
-			WalkAnimation.Seek(0.0, true);
+			_walkAnimation.Pause();
+			_walkAnimation.Seek(0.0, true);
 		}
 	}
 
