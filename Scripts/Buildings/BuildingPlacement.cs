@@ -10,6 +10,7 @@ public partial class BuildingPlacement : Node3D
 	private BuildingDefinition _selectedBuilding;
 	private Node3D _preview;
 	private MeshInstance3D _gridVisual;
+	private bool _placementClickPending;
 
 	public override void _Ready()
 	{
@@ -58,17 +59,41 @@ public partial class BuildingPlacement : Node3D
 	
 	public override void _PhysicsProcess(double delta)
 	{
-		// GameMaker equivalent: a Step event synchronized with physics.
 		if (_preview == null || !_preview.Visible)
+		{
+			_placementClickPending = false;
 			return;
+		}
 
 		bool canPlace = _validator.CanPlace(
-		GetWorld3D().DirectSpaceState,
-		_preview.GlobalPosition,
-		_selectedBuilding
-	);
+			GetWorld3D().DirectSpaceState,
+			_preview.GlobalPosition,
+			_selectedBuilding
+		);
 
 		UpdatePlacementFeedback(canPlace);
+
+		if (!_placementClickPending)
+			return;
+
+		_placementClickPending = false;
+
+		if (canPlace)
+			PlaceBuilding(_preview.GlobalPosition);
+	}
+
+	private void PlaceBuilding(Vector3 worldPosition)
+	{
+		Building building = _selectedBuilding.Scene.Instantiate<Building>();
+
+		// Set these before AddChild: AddChild triggers Building._Ready(),
+		// where the real building registers its footprint with WorldGrid.
+		building.Definition = _selectedBuilding;
+		building.Position = GetParent<Node3D>().ToLocal(worldPosition);
+
+		GetParent().AddChild(building);
+
+		GD.Print("Built: ", _selectedBuilding.DisplayName);
 	}
 
 	public void BeginPlacement(BuildingDefinition definition)
@@ -164,6 +189,7 @@ public partial class BuildingPlacement : Node3D
 
 	public void CancelPlacement()
 	{
+		_placementClickPending = false;
 		_selectedBuilding = null;
 
 		if (_preview != null)
@@ -197,5 +223,19 @@ public partial class BuildingPlacement : Node3D
 
 		if (_gridVisual.MaterialOverride is StandardMaterial3D gridMaterial)
 			gridMaterial.AlbedoColor = gridColor;
+	}
+
+	public override void _UnhandledInput(InputEvent @event)
+	{
+		// UI buttons handle their own clicks before they reach this method.
+		if (_preview == null)
+			return;
+
+		if (@event is InputEventMouseButton mouseButton &&
+			mouseButton.ButtonIndex == MouseButton.Left &&
+			mouseButton.Pressed)
+		{
+			_placementClickPending = true;
+		}
 	}
 }
