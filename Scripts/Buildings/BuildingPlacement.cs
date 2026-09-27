@@ -2,23 +2,24 @@ using Godot;
 
 public partial class BuildingPlacement : Node3D
 {
-	[Export] public float GridSize { get; set; } = 2.0f;
 	[Export] public int GridCellsAcross { get; set; } = 15;
 
 	private Camera3D _playerCamera;
+	private WorldGrid _worldGrid;
 	private BuildingDefinition _selectedBuilding;
 	private Node3D _preview;
-	private MeshInstance3D _grid;
+	private MeshInstance3D _gridVisual;
 
 	public override void _Ready()
 	{
 		// GameMaker equivalent: Create event.
 		_playerCamera = GetNode<Camera3D>("../Player/Camera3D");
+		_worldGrid = GetNode<WorldGrid>("../WorldGrid");
 	}
 
 	public override void _Process(double delta)
 	{
-		// GameMaker equivalent: Step event. No placement work outside placement mode.
+		// GameMaker equivalent: Step event. No work outside placement mode.
 		if (_preview == null)
 			return;
 
@@ -26,27 +27,29 @@ public partial class BuildingPlacement : Node3D
 		Vector3 rayOrigin = _playerCamera.ProjectRayOrigin(mousePosition);
 		Vector3 rayDirection = _playerCamera.ProjectRayNormal(mousePosition);
 
-		// The sandbox floor surface is at Y = 0.
-		Plane floorPlane = new(Vector3.Up, 0.0f);
-		Vector3? hitPosition = floorPlane.IntersectsRay(rayOrigin, rayDirection);
+		// Current sandbox ground is level with the world grid.
+		Plane ground = new(Vector3.Up, _worldGrid.GlobalPosition.Y);
+		Vector3? hitPosition = ground.IntersectsRay(rayOrigin, rayDirection);
 
 		if (hitPosition == null)
 		{
 			_preview.Hide();
-			_grid.Hide();
+			_gridVisual.Hide();
 			return;
 		}
 
-		Vector3 position = hitPosition.Value;
-		position.X = Mathf.Round(position.X / GridSize) * GridSize;
-		position.Y = 0.0f;
-		position.Z = Mathf.Round(position.Z / GridSize) * GridSize;
+		// The building snaps according to its footprint's odd/even dimensions.
+		_preview.GlobalPosition = _worldGrid.SnapFootprintCenter(
+			hitPosition.Value,
+			_selectedBuilding.FootprintCells
+		);
 
-		_preview.GlobalPosition = position;
-		_grid.GlobalPosition = position;
+		// The visible patch stays aligned with WORLD cells, even for a 2x2 building.
+		Vector2I nearestCell = _worldGrid.WorldToCell(hitPosition.Value);
+		_gridVisual.GlobalPosition = _worldGrid.CellToWorld(nearestCell);
 
 		_preview.Show();
-		_grid.Show();
+		_gridVisual.Show();
 	}
 
 	public void BeginPlacement(BuildingDefinition definition)
@@ -58,16 +61,15 @@ public partial class BuildingPlacement : Node3D
 
 		_selectedBuilding = definition;
 		CreatePreview();
-		CreateGrid();
+		CreateGridVisual();
 	}
 
 	private void CreatePreview()
 	{
-		// Instantiate once when a building is selected.
 		_preview = _selectedBuilding.Scene.Instantiate<Node3D>();
 		AddChild(_preview);
 
-		// The preview is visual only and cannot block the player.
+		// A preview is visual only; it cannot block the player.
 		if (_preview is CollisionObject3D collisionObject)
 		{
 			collisionObject.CollisionLayer = 0;
@@ -93,9 +95,9 @@ public partial class BuildingPlacement : Node3D
 		}
 	}
 
-	private void CreateGrid()
+	private void CreateGridVisual()
 	{
-		// Build the line mesh once per selection; moving it does not rebuild it.
+		// Create the lines once. Each frame we only move this mesh.
 		int cells = Mathf.Max(
 			GridCellsAcross,
 			Mathf.Max(_selectedBuilding.FootprintCells.X,
@@ -105,27 +107,26 @@ public partial class BuildingPlacement : Node3D
 		if (cells % 2 == 0)
 			cells++;
 
-		float halfWidth = cells * GridSize * 0.5f;
+		float cellSize = _worldGrid.CellSize;
+		float halfWidth = cells * cellSize * 0.5f;
 		ImmediateMesh lines = new();
 
 		lines.SurfaceBegin(Mesh.PrimitiveType.Lines);
 
 		for (int line = 0; line <= cells; line++)
 		{
-			float coordinate = -halfWidth + line * GridSize;
+			float coordinate = -halfWidth + line * cellSize;
 
-			// Line running along Z.
 			lines.SurfaceAddVertex(new Vector3(coordinate, 0.04f, -halfWidth));
 			lines.SurfaceAddVertex(new Vector3(coordinate, 0.04f, halfWidth));
 
-			// Line running along X.
 			lines.SurfaceAddVertex(new Vector3(-halfWidth, 0.04f, coordinate));
 			lines.SurfaceAddVertex(new Vector3(halfWidth, 0.04f, coordinate));
 		}
 
 		lines.SurfaceEnd();
 
-		_grid = new MeshInstance3D
+		_gridVisual = new MeshInstance3D
 		{
 			Mesh = lines,
 			MaterialOverride = new StandardMaterial3D
@@ -136,7 +137,7 @@ public partial class BuildingPlacement : Node3D
 			}
 		};
 
-		AddChild(_grid);
+		AddChild(_gridVisual);
 	}
 
 	public void CancelPlacement()
@@ -149,10 +150,10 @@ public partial class BuildingPlacement : Node3D
 			_preview = null;
 		}
 
-		if (_grid != null)
+		if (_gridVisual != null)
 		{
-			_grid.QueueFree();
-			_grid = null;
+			_gridVisual.QueueFree();
+			_gridVisual = null;
 		}
 	}
 }

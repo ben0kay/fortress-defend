@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://cvqfbsopd7xu6" path="res://Scripts/UI/Hud.cs" id="4_rvmsc"]
 [ext_resource type="Script" uid="uid://nq3f71hjxps4" path="res://Scripts/Buildings/BuildingPlacement.cs" id="5_rjrbw"]
 [ext_resource type="Resource" uid="uid://bb63xmdjntcf5" path="res://Data/BuildingCatalog.tres" id="5_ypj6x"]
+[ext_resource type="Script" uid="uid://cje6pe16dg2w8" path="res://Scripts/World/WorldGrid.cs" id="7_44b12"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_km8ha"]
 size = Vector3(40, 1, 40)
@@ -90,3 +91,6 @@ layout_mode = 2
 
 [node name="BuildingPlacement" type="Node3D" parent="." unique_id=1143372234]
 script = ExtResource("5_rjrbw")
+
+[node name="WorldGrid" type="Node3D" parent="." unique_id=674227576]
+script = ExtResource("7_44b12")
