@@ -10,6 +10,8 @@ public partial class BuildingPlacement : Node3D
 	private Node3D _preview;
 	private MeshInstance3D _gridVisual;
 
+	private Vector3? _lastCheckedPosition;
+
 	public override void _Ready()
 	{
 		// GameMaker equivalent: Create event.
@@ -27,7 +29,6 @@ public partial class BuildingPlacement : Node3D
 		Vector3 rayOrigin = _playerCamera.ProjectRayOrigin(mousePosition);
 		Vector3 rayDirection = _playerCamera.ProjectRayNormal(mousePosition);
 
-		// Current sandbox ground is level with the world grid.
 		Plane ground = new(Vector3.Up, _worldGrid.GlobalPosition.Y);
 		Vector3? hitPosition = ground.IntersectsRay(rayOrigin, rayDirection);
 
@@ -38,15 +39,28 @@ public partial class BuildingPlacement : Node3D
 			return;
 		}
 
-		// The building snaps according to its footprint's odd/even dimensions.
-		_preview.GlobalPosition = _worldGrid.SnapFootprintCenter(
+		Vector3 position = _worldGrid.SnapFootprintCenter(
 			hitPosition.Value,
 			_selectedBuilding.FootprintCells
 		);
 
-		// The visible patch stays aligned with WORLD cells, even for a 2x2 building.
+		_preview.GlobalPosition = position;
+
+		// Keep the visible lines aligned with world cells.
 		Vector2I nearestCell = _worldGrid.WorldToCell(hitPosition.Value);
 		_gridVisual.GlobalPosition = _worldGrid.CellToWorld(nearestCell);
+
+		// Occupancy is static for now, so check only when the snapped position changes.
+		if (_lastCheckedPosition == null || _lastCheckedPosition.Value != position)
+		{
+			bool canPlace = _worldGrid.CanOccupy(
+				position,
+				_selectedBuilding.FootprintCells
+			);
+
+			UpdatePlacementFeedback(canPlace);
+			_lastCheckedPosition = position;
+		}
 
 		_preview.Show();
 		_gridVisual.Show();
@@ -55,6 +69,7 @@ public partial class BuildingPlacement : Node3D
 	public void BeginPlacement(BuildingDefinition definition)
 	{
 		CancelPlacement();
+		_lastCheckedPosition = null;
 
 		if (definition == null || definition.Scene == null)
 			return;
@@ -155,5 +170,25 @@ public partial class BuildingPlacement : Node3D
 			_gridVisual.QueueFree();
 			_gridVisual = null;
 		}
+	}
+
+	private void UpdatePlacementFeedback(bool canPlace)
+	{
+		Color previewColor = canPlace
+			? new Color(0.2f, 0.9f, 1.0f, 0.45f)
+			: new Color(1.0f, 0.2f, 0.2f, 0.55f);
+
+		Color gridColor = canPlace
+			? new Color(0.5f, 0.85f, 1.0f, 0.55f)
+			: new Color(1.0f, 0.25f, 0.25f, 0.65f);
+
+		MeshInstance3D previewMesh =
+			_preview.GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
+
+		if (previewMesh?.MaterialOverride is StandardMaterial3D previewMaterial)
+			previewMaterial.AlbedoColor = previewColor;
+
+		if (_gridVisual.MaterialOverride is StandardMaterial3D gridMaterial)
+			gridMaterial.AlbedoColor = gridColor;
 	}
 }

@@ -9,14 +9,56 @@ public partial class Building : StaticBody3D
 	[Signal]
 	public delegate void DestroyedEventHandler(Building building);
 
-	[Export] public int MaximumHealth { get; set; } = 100;
+	[Export] public BuildingDefinition Definition { get; set; }
 
+	// Placement sets this BEFORE adding the preview to the scene tree.
+	public bool IsPreview { get; set; }
+
+	public int MaximumHealth { get; private set; }
 	public int CurrentHealth { get; private set; }
+
+	private WorldGrid _worldGrid;
+	private bool _hasReservedCells;
 
 	public override void _Ready()
 	{
-		// GameMaker equivalent: Create event.
+		// GameMaker equivalent: the generic building Create event.
+		if (Definition == null)
+		{
+			GD.PushError($"{Name} has no BuildingDefinition assigned.");
+			return;
+		}
+
+		MaximumHealth = Definition.MaximumHealth;
 		CurrentHealth = MaximumHealth;
+
+		if (IsPreview)
+			return;
+
+		// Real buildings live directly under Sandbox. Preplaced buildings use
+		// this same initialization path as buildings placed during gameplay.
+		_worldGrid = GetNode<WorldGrid>("../WorldGrid");
+
+		GlobalPosition = _worldGrid.SnapFootprintCenter(
+			GlobalPosition,
+			Definition.FootprintCells
+		);
+
+		_hasReservedCells = _worldGrid.TryOccupy(
+			this,
+			GlobalPosition,
+			Definition.FootprintCells
+		);
+
+		if (!_hasReservedCells)
+			GD.PushError($"{Name} could not reserve its building footprint.");
+	}
+
+	public override void _ExitTree()
+	{
+		// GameMaker equivalent: Clean Up event.
+		if (_hasReservedCells)
+			_worldGrid.Release(this);
 	}
 
 	public void TakeDamage(int amount)
