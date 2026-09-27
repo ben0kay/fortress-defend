@@ -8,6 +8,7 @@ public partial class WorldGrid : Node3D
 	// A missing cell is free. An occupied cell records the object that owns it.
 	private readonly Dictionary<Vector2I, Node3D> _cellOwners = new();
 	private readonly Dictionary<Node3D, List<Vector2I>> _ownerCells = new();
+	private readonly Dictionary<string, int> _buildingCounts = new();
 
 	public Vector2I WorldToCell(Vector3 worldPosition)
 	{
@@ -93,7 +94,7 @@ public partial class WorldGrid : Node3D
 		if (cells.Count == 0)
 			return false;
 
-		// Check the entire footprint before changing anything.
+		// Check the whole footprint before changing any cells.
 		foreach (Vector2I cell in cells)
 		{
 			if (_cellOwners.ContainsKey(cell))
@@ -104,6 +105,13 @@ public partial class WorldGrid : Node3D
 			_cellOwners[cell] = owner;
 
 		_ownerCells[owner] = cells;
+
+		if (owner is Building building && building.Definition != null)
+		{
+			string key = building.Definition.Key;
+			_buildingCounts[key] = CountBuildings(key) + 1;
+		}
+
 		return true;
 	}
 
@@ -116,5 +124,23 @@ public partial class WorldGrid : Node3D
 			_cellOwners.Remove(cell);
 
 		_ownerCells.Remove(owner);
+
+		if (owner is Building building && building.Definition != null)
+		{
+			string key = building.Definition.Key;
+			int remaining = CountBuildings(key) - 1;
+
+			if (remaining > 0)
+				_buildingCounts[key] = remaining;
+			else
+				_buildingCounts.Remove(key);
+		}
+	}
+
+	public int CountBuildings(string definitionKey)
+	{
+		return _buildingCounts.TryGetValue(definitionKey, out int count)
+			? count
+			: 0;
 	}
 }

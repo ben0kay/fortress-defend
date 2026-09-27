@@ -20,28 +20,33 @@ public sealed class PlacementValidator
 	}
 
 	public bool CanPlace(
-		PhysicsDirectSpaceState3D space,
-		Vector3 position,
-		Vector2I footprintCells)
-	{
-		// Buildings reserve world grid cells.
-		if (!_worldGrid.CanOccupy(position, footprintCells))
-			return false;
+	PhysicsDirectSpaceState3D space,
+	Vector3 position,
+	BuildingDefinition definition)
+{
+	if (definition == null)
+		return false;
 
-		// Check the same footprint against the player, walls, and rocks.
-		// The small inset allows objects to touch at the cell boundary.
-		_footprintShape.Size = new Vector3(
-			footprintCells.X * _worldGrid.CellSize - 0.1f,
-			2.0f,
-			footprintCells.Y * _worldGrid.CellSize - 0.1f
-		);
+	// Check the number of existing buildings of this type.
+	if (_worldGrid.CountBuildings(definition.Key) >= definition.MaximumInstances)
+		return false;
 
-		// The box starts at ground level and extends two units upward.
-		_query.Transform = new Transform3D(
-			Basis.Identity,
-			position + Vector3.Up
-		);
+	// Check cells already reserved by buildings.
+	if (!_worldGrid.CanOccupy(position, definition.FootprintCells))
+		return false;
 
-		return space.IntersectShape(_query, 1).Count == 0;
-	}
+	// Check the player, wall, and other physics blockers.
+	_footprintShape.Size = new Vector3(
+		definition.FootprintCells.X * _worldGrid.CellSize - 0.1f,
+		2.0f,
+		definition.FootprintCells.Y * _worldGrid.CellSize - 0.1f
+	);
+
+	_query.Transform = new Transform3D(
+		Basis.Identity,
+		position + Vector3.Up
+	);
+
+	return space.IntersectShape(_query, 1).Count == 0;
+}
 }
