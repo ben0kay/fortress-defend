@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://dtbw5fbhosrju" path="res://Scripts/World/ResourceInventory.cs" id="7_0fpt2"]
 [ext_resource type="Script" uid="uid://cje6pe16dg2w8" path="res://Scripts/World/WorldGrid.cs" id="7_44b12"]
 [ext_resource type="PackedScene" uid="uid://b2d28svdevsbn" path="res://biofiber_patch.tscn" id="8_0fpt2"]
+[ext_resource type="PackedScene" uid="uid://drdewvwdrr4c2" path="res://Scripts/Enemies/melee_blob.tscn" id="9_igx0j"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_km8ha"]
 size = Vector3(40, 1, 40)
@@ -107,3 +108,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6507015, 0.5, 3.3051195)
 
 [node name="Node3D2" parent="." unique_id=1774343975 instance=ExtResource("8_0fpt2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.814231, 0.5, 6.0980034)
+
+[node name="Enemy" parent="." unique_id=563103750 instance=ExtResource("9_igx0j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.380364, 0, 10.041887)
