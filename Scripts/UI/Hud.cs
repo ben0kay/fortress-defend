@@ -10,6 +10,7 @@ public partial class Hud : CanvasLayer
 	private ResourceInventory _inventory;
 	private BuildingPlacement _buildingPlacement;
 	private Label _carbonLabel;
+	private Label _biofiberLabel;
 	private PanelContainer _buildMenu;
 	private HBoxContainer _buildingChoices;
 	private HBoxContainer _categories;
@@ -24,13 +25,15 @@ public partial class Hud : CanvasLayer
 		_buildingPlacement = GetNode<BuildingPlacement>("../BuildingPlacement");
 
 		_carbonLabel = GetNode<Label>("ResourceBar/ResourceCounts/CarbonLabel");
+		_biofiberLabel = GetNode<Label>("ResourceBar/ResourceCounts/BiofiberLabel");
 		_buildMenu = GetNode<PanelContainer>("BuildMenu");
 		_buildingChoices =
 			GetNode<HBoxContainer>("BuildMenu/MenuRows/BuildingChoices");
 		_categories =
 			GetNode<HBoxContainer>("BuildMenu/MenuRows/Categories");
 
-		UpdateCarbonLabel(_inventory.GetAmount("carbon"));
+		UpdateResourceLabel("carbon", _inventory.GetAmount("carbon"));
+		UpdateResourceLabel("biofiber", _inventory.GetAmount("biofiber"));
 		_inventory.ResourceChanged += OnResourceChanged;
 
 		CreateBuildingButtons();
@@ -178,14 +181,16 @@ public partial class Hud : CanvasLayer
 		_buildMenu.Hide();
 	}
 
-	private void OnResourceChanged(string resourceKey, int newAmount)
+private void UpdateResourceLabel(string resourceKey, int amount)
+{
+	switch (resourceKey)
 	{
-		if (resourceKey == "carbon")
-			UpdateCarbonLabel(newAmount);
-	}
+		case "carbon":
+			_carbonLabel.Text = "Carbon: " + amount;
+			break;
 
-	private void UpdateCarbonLabel(int amount)
-	{
-		_carbonLabel.Text = "Carbon: " + amount;
+		case "biofiber":
+			_biofiberLabel.Text = "Biofiber: " + amount;
+			break;
 	}
 }
