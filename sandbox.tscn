@@ -7,7 +7,7 @@
 [ext_resource type="Resource" uid="uid://bb63xmdjntcf5" path="res://Data/BuildingCatalog.tres" id="5_ypj6x"]
 [ext_resource type="Script" uid="uid://dtbw5fbhosrju" path="res://Scripts/World/ResourceInventory.cs" id="7_0fpt2"]
 [ext_resource type="Script" uid="uid://cje6pe16dg2w8" path="res://Scripts/World/WorldGrid.cs" id="7_44b12"]
-[ext_resource type="Script" uid="uid://dwwyyjnni3mjt" path="res://Notes.cs" id="8_0fpt2"]
+[ext_resource type="PackedScene" uid="uid://b2d28svdevsbn" path="res://biofiber_patch.tscn" id="8_0fpt2"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_km8ha"]
 size = Vector3(40, 1, 40)
@@ -98,5 +98,8 @@ script = ExtResource("7_44b12")
 [node name="ResourceInventory" type="Node" parent="." unique_id=1448365247]
 script = ExtResource("7_0fpt2")
 
-[node name="NOTES" type="Node" parent="." unique_id=1394400316]
-script = ExtResource("8_0fpt2")
+[node name="Node3D" parent="." unique_id=53506786 instance=ExtResource("8_0fpt2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6507015, 0.5, 3.3051195)
+
+[node name="Node3D2" parent="." unique_id=1774343975 instance=ExtResource("8_0fpt2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.814231, 0.5, 6.0980034)
