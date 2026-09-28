@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" format=3 uid="uid://bn3x5lq54c7ps"]
+
+[ext_resource type="Script" uid="uid://pgb40xqblgwu" path="res://Scripts/Enemies/EnemyDefinition.cs" id="1_24klt"]
+
+[resource]
+script = ExtResource("1_24klt")
+Key = "melee_blob"
+DisplayName = "Melee Blob"
+metadata/_custom_type_script = "uid://pgb40xqblgwu"

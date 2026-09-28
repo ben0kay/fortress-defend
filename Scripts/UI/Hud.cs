@@ -9,12 +9,12 @@ public partial class Hud : CanvasLayer
 	private Player _player;
 	private ResourceInventory _inventory;
 	private BuildingPlacement _buildingPlacement;
-	private Label _carbonLabel;
-	private Label _biofiberLabel;
 	private PanelContainer _buildMenu;
+	private HBoxContainer _resourceCounts;
 	private HBoxContainer _buildingChoices;
 	private HBoxContainer _categories;
 
+	private readonly Dictionary<string, Label> _resourceLabels = new();
 	private readonly Dictionary<string, List<Button>> _choicesByCategory = new();
 	private string _openCategory = "";
 
@@ -24,16 +24,14 @@ public partial class Hud : CanvasLayer
 		_inventory = GetNode<ResourceInventory>("../ResourceInventory");
 		_buildingPlacement = GetNode<BuildingPlacement>("../BuildingPlacement");
 
-		_carbonLabel = GetNode<Label>("ResourceBar/ResourceCounts/CarbonLabel");
-		_biofiberLabel = GetNode<Label>("ResourceBar/ResourceCounts/BiofiberLabel");
+		_resourceCounts = GetNode<HBoxContainer>("ResourceBar/ResourceCounts");
 		_buildMenu = GetNode<PanelContainer>("BuildMenu");
 		_buildingChoices =
 			GetNode<HBoxContainer>("BuildMenu/MenuRows/BuildingChoices");
 		_categories =
 			GetNode<HBoxContainer>("BuildMenu/MenuRows/Categories");
 
-		UpdateResourceLabel("carbon", _inventory.GetAmount("carbon"));
-		UpdateResourceLabel("biofiber", _inventory.GetAmount("biofiber"));
+		RegisterResourceLabels();
 		_inventory.ResourceChanged += OnResourceChanged;
 
 		CreateBuildingButtons();
@@ -46,6 +44,57 @@ public partial class Hud : CanvasLayer
 	{
 		if (@event.IsActionPressed("toggle_build_menu") && !@event.IsEcho())
 			ToggleBuildMenu();
+	}
+
+	private void RegisterResourceLabels()
+	{
+		foreach (Node child in _resourceCounts.GetChildren())
+		{
+			if (child is not Label label)
+				continue;
+
+			string nodeName = label.Name.ToString();
+
+			if (!nodeName.EndsWith("Label", StringComparison.Ordinal))
+				continue;
+
+			string resourceKey = nodeName[..^"Label".Length]
+				.ToLowerInvariant();
+
+			_resourceLabels[resourceKey] = label;
+			UpdateResourceLabel(resourceKey, _inventory.GetAmount(resourceKey));
+		}
+	}
+
+	private void OnResourceChanged(string resourceKey, int newAmount)
+	{
+		UpdateResourceLabel(resourceKey, newAmount);
+	}
+
+	private void UpdateResourceLabel(string resourceKey, int amount)
+	{
+		if (!_resourceLabels.TryGetValue(resourceKey, out Label label))
+		{
+			label = new Label
+			{
+				Name = resourceKey + "Label",
+				Text = FormatResourceName(resourceKey) + ": 0"
+			};
+
+			_resourceCounts.AddChild(label);
+			_resourceLabels[resourceKey] = label;
+		}
+
+		string displayName = label.Text.Split(':')[0];
+		label.Text = displayName + ": " + amount;
+	}
+
+	private static string FormatResourceName(string resourceKey)
+	{
+		if (string.IsNullOrEmpty(resourceKey))
+			return resourceKey;
+
+		return char.ToUpperInvariant(resourceKey[0]) + resourceKey[1..];
 	}
 
 	private void CreateBuildingButtons()
@@ -179,18 +228,5 @@ public partial class Hud : CanvasLayer
 
 		_buildingChoices.Hide();
 		_buildMenu.Hide();
-	}
-
-private void UpdateResourceLabel(string resourceKey, int amount)
-{
-	switch (resourceKey)
-	{
-		case "carbon":
-			_carbonLabel.Text = "Carbon: " + amount;
-			break;
-
-		case "biofiber":
-			_biofiberLabel.Text = "Biofiber: " + amount;
-			break;
 	}
 }

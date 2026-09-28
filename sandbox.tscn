@@ -71,7 +71,7 @@ text = "Carbon: 0"
 
 [node name="BiofiberLabel" type="Label" parent="HUD/ResourceBar/ResourceCounts" unique_id=138330099]
 layout_mode = 2
-text = "Biofiber: 0"
+text = "BioFiber: 0"
 
 [node name="BuildMenu" type="PanelContainer" parent="HUD" unique_id=1452905175]
 visible = false
