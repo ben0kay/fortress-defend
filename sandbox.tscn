@@ -7,6 +7,7 @@
 [ext_resource type="Resource" uid="uid://bb63xmdjntcf5" path="res://Data/BuildingCatalog.tres" id="5_ypj6x"]
 [ext_resource type="Script" uid="uid://dtbw5fbhosrju" path="res://Scripts/World/ResourceInventory.cs" id="7_0fpt2"]
 [ext_resource type="Script" uid="uid://cje6pe16dg2w8" path="res://Scripts/World/WorldGrid.cs" id="7_44b12"]
+[ext_resource type="Script" uid="uid://dwwyyjnni3mjt" path="res://Notes.cs" id="8_0fpt2"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_km8ha"]
 size = Vector3(40, 1, 40)
@@ -96,3 +97,6 @@ script = ExtResource("7_44b12")
 
 [node name="ResourceInventory" type="Node" parent="." unique_id=1448365247]
 script = ExtResource("7_0fpt2")
+
+[node name="NOTES" type="Node" parent="." unique_id=1394400316]
+script = ExtResource("8_0fpt2")

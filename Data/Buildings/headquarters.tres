@@ -6,7 +6,7 @@
 
 [sub_resource type="Resource" id="Resource_44b12"]
 script = ExtResource("1_e6poa")
-ResourceKey = "cabon"
+ResourceKey = "carbon"
 Amount = 5
 metadata/_custom_type_script = "uid://spf2pt0jcecf"
 

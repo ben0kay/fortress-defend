@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://b2d28svdevsbn"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_km8ha"]
+size = Vector3(1.5, 1, 1.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dourk"]
+size = Vector3(1.5, 1, 1.5)
+
+[node name="Node3D" type="Node3D" unique_id=53506786]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1495395739]
+mesh = SubResource("BoxMesh_km8ha")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1142544284]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_dourk")

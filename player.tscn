@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://bxpnm1vrsd7nb" path="res://Scripts/Player/PlayerGathering.cs" id="2_hqtel"]
 [ext_resource type="Script" uid="uid://404pif7t6lno" path="res://Scripts/Player/PlayerFacing.cs" id="3_sweqy"]
 [ext_resource type="PackedScene" uid="uid://i0k2ffcdi6xa" path="res://Assets/Models/Player/PLAYER_NEW.glb" id="4_hqtel"]
+[ext_resource type="Script" uid="uid://0tsn6v6bkk1p" path="res://Scripts/Player/PlayerMelee.cs" id="5_sweqy"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4flbx"]
 size = Vector3(1, 1.6, 1)
@@ -13,6 +14,9 @@ size = Vector3(1, 1.6, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_km8ha"]
 size = Vector3(0.3, 0.3, 0.3)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_km8ha"]
+radius = 1.4
 
 [node name="Player" type="CharacterBody3D" unique_id=481754007]
 script = ExtResource("1_i3pqv")
@@ -42,3 +46,10 @@ mesh = SubResource("BoxMesh_km8ha")
 
 [node name="PLAYER_NEW" parent="Facing" unique_id=1865884541 instance=ExtResource("4_hqtel")]
 transform = Transform3D(-0.4, 0, -3.4969112e-08, 0, 0.4, 0, 3.4969112e-08, 0, -0.4, 0, 0, 0)
+
+[node name="PlayerMelee" type="Area3D" parent="Facing" unique_id=1409687462]
+script = ExtResource("5_sweqy")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Facing/PlayerMelee" unique_id=1517937765]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -1.4)
+shape = SubResource("SphereShape3D_km8ha")
